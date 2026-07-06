@@ -1,0 +1,25 @@
+# Virtual Environment
+venv/
+.venv/
+ENV/
+
+# Python Cache & Compiled Code
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local database storage & Vector databases
+chroma_db_storage/
+*.db
+*.sqlite
+
+# Local session/cookie test utilities
+cookies.txt
+
+# OS metadata
+.DS_Store
+Thumbs.db

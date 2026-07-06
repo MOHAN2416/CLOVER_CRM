@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Enterprise Access | Collaboration Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; font-family: system-ui, -apple-system, sans-serif; }
+        .form-card { max-width: 500px; margin: 80px auto; border-radius: 12px; border: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card form-card shadow p-4 p-md-5 bg-white">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold text-dark">Let's Scale Your Business 🚀</h3>
+                <p class="text-muted small">Fill out the quick form below to sync with our strategic solutions team.</p>
+            </div>
+            
+            <form id="publicInboundForm">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Full Name *</label>
+                    <input type="text" id="leadName" class="form-control py-2" placeholder="e.g., Nitin Gadkari" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email Address *</label>
+                    <input type="email" id="leadEmail" class="form-control py-2" placeholder="name@company.com" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Company Name</label>
+                    <input type="text" id="leadCompany" class="form-control py-2" placeholder="e.g., NHAI Infrastructure">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Phone Number</label>
+                    <input type="text" id="leadPhone" class="form-control py-2" placeholder="+91 9876543210">
+                </div>
+                
+                <input type="hidden" id="leadSource" value="Website Landing Page">
+
+                <button type="submit" class="btn btn-dark w-100 py-2 fw-bold mt-3">Submit Inquiry Request</button>
+            </form>
+            <div id="responseAlert" class="alert mt-3 d-none text-center small" role="alert"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('publicInboundForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const alertBox = document.getElementById('responseAlert');
+            const payload = {
+                name: document.getElementById('leadName').value,
+                email: document.getElementById('leadEmail').value,
+                company: document.getElementById('leadCompany').value,
+                phone: document.getElementById('leadPhone').value,
+                source: document.getElementById('leadSource').value
+            };
+
+            try {
+                const response = await fetch('/api/webhook/lead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                alertBox.classList.remove('d-none', 'alert-success', 'alert-danger');
+                
+                if (result.status === 'success') {
+                    alertBox.classList.add('alert-success');
+                    alertBox.innerText = result.message;
+                    document.getElementById('publicInboundForm').reset();
+                } else {
+                    alertBox.classList.add('alert-danger');
+                    alertBox.innerText = "Submission Error: " + result.message;
+                }
+            } catch (error) {
+                alertBox.classList.remove('d-none');
+                alertBox.classList.add('alert-danger');
+                alertBox.innerText = "Network pipeline error connecting to server.";
+            }
+        });
+    </script>
+</body>
+</html>
