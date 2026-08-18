@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>const API_BASE_URL = "http://127.0.0.1:5000";</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Enterprise Access | Collaboration Portal</title>
@@ -59,10 +60,11 @@
             };
 
             try {
-                const response = await fetch('/api/webhook/lead', {
+                const response = await fetch(API_BASE_URL + '/api/webhook/lead', {
+                credentials: 'include',
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload, {credentials: 'include'})
                 });
                 
                 const result = await response.json();

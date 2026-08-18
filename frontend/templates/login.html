@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>const API_BASE_URL = "http://127.0.0.1:5000";</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clover CRM | Terminal Gateway</title>
@@ -118,10 +119,11 @@
                 password: document.getElementById('password').value
             };
 
-            const res = await fetch('/login', {
+            const res = await fetch(API_BASE_URL + '/login', {
+                credentials: 'include',
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload, {credentials: 'include'})
             });
             const result = await res.json();
             alertBox.classList.remove('d-none', 'alert-success', 'alert-danger');

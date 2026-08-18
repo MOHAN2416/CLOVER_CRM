@@ -1,4 +1,5 @@
-from flask import Flask, render_template, jsonify, request, Response, session, redirect, url_for
+from flask import Flask, jsonify, request, Response, session, redirect, url_for
+from flask_cors import CORS
 import mysql.connector
 from db import get_db_connection
 import csv
@@ -11,6 +12,11 @@ app = Flask(__name__)
 
 # CRITICAL: This allows Flask to encrypt session cookies!
 app.secret_key = 'clover_system_encryption_token_secret_2026'
+
+CORS(app, supports_credentials=True)
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True
+
 
 def ensure_admin_user():
     connection = None
@@ -42,7 +48,7 @@ def ensure_admin_user():
 
 ensure_admin_user()
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
     """Serves and processes the secure session authorization portal."""
     if request.method == 'POST':
@@ -83,9 +89,9 @@ def login():
             if cursor: cursor.close()
             if connection: connection.close()
                 
-    return render_template('login.html')
+    return jsonify({'status': 'error', 'message': 'Method not allowed'}), 405
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/signup', methods=['POST'])
 def signup():
     """Serves and processes the sales representative registration portal."""
     if request.method == 'POST':
@@ -134,7 +140,7 @@ def signup():
             if cursor: cursor.close()
             if connection: connection.close()
                 
-    return render_template('signup.html')
+    return jsonify({'status': 'error', 'message': 'Method not allowed'}), 405
 
 @app.route('/logout')
 def logout():
@@ -142,7 +148,7 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-@app.route('/reset-password', methods=['GET', 'POST'])
+@app.route('/reset-password', methods=['POST'])
 def reset_password():
     """Serves and processes the sales representative credential recovery portal."""
     if request.method == 'POST':
@@ -187,14 +193,14 @@ def reset_password():
             if cursor: cursor.close()
             if connection: connection.close()
             
-    return render_template('reset_password.html')
+    return jsonify({'status': 'error', 'message': 'Method not allowed'}), 405
 
 
 
 @app.route('/join')
 def render_public_lead_form():
     """Renders the public-facing inbound marketing registration page."""
-    return render_template('join.html')
+    return jsonify({'status': 'error', 'message': 'Method not allowed'}), 405
 
 
 @app.route('/api/webhook/lead', methods=['POST'])
@@ -489,7 +495,7 @@ def index():
     """Serves the main frontend CRM dashboard."""
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('index.html')
+    return jsonify({'status': 'success', 'message': 'API is running'}), 200
 
 @app.route('/api/profile')
 def get_profile():
