@@ -1,13 +1,19 @@
 import mysql.connector
 from mysql.connector import pooling
 import sys
+import os
 
-# Configure database credentials
+# ─────────────────────────────────────────────────────────────
+# Pull credentials from environment variables.
+# On Render: set these in the dashboard under Environment → Add
+# Environment Variable.
+# For local development: they fall back to your local MySQL setup.
+# ─────────────────────────────────────────────────────────────
 db_config = {
-    "host": "localhost",
-    "user": "root",
-    "password": "CloverPass123!",  # <-- Ensure this matches the password from Step 1
-    "database": "crm_db"
+    "host":     os.environ.get("DB_HOST",     "localhost"),
+    "user":     os.environ.get("DB_USER",     "root"),
+    "password": os.environ.get("DB_PASSWORD", "CloverPass123!"),
+    "database": os.environ.get("DB_NAME",     "crm_db")
 }
 
 # Pre-initialize pool to None
@@ -19,10 +25,10 @@ try:
         pool_size=5,
         **db_config
     )
-    print("Database connection pool initialized successfully.")
+    print("[✓] Database connection pool initialized successfully.")
 except mysql.connector.Error as err:
     print(f"\n❌ DATABASE CONFIGURATION ERROR: {err}")
-    print("Please check your password configuration or user credentials inside db.py.")
+    print("Please check your DB_HOST, DB_USER, DB_PASSWORD, DB_NAME environment variables.")
     # Exit gracefully instead of letting the app start up broken
     sys.exit(1)
 

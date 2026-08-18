@@ -5,15 +5,23 @@ from db import get_db_connection
 import csv
 import io
 import ollama
+import os
 from search_engine import index_all_accounts, semantic_search_pipeline
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-# CRITICAL: This allows Flask to encrypt session cookies!
-app.secret_key = 'clover_system_encryption_token_secret_2026'
+# ─────────────────────────────────────────────────────────────
+# Environment-driven configuration.
+# On Render: set SECRET_KEY and FRONTEND_URL in the dashboard under
+# Environment → Add Environment Variable.
+# ─────────────────────────────────────────────────────────────
+app.secret_key = os.environ.get('SECRET_KEY', 'clover_system_encryption_token_secret_2026')
 
-CORS(app, supports_credentials=True)
+# FRONTEND_URL is your Vercel deployment URL e.g. https://clover-crm.vercel.app
+# Defaults to localhost for local testing.
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:8000')
+CORS(app, supports_credentials=True, origins=[FRONTEND_URL])
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 app.config['SESSION_COOKIE_SECURE'] = True
 
@@ -986,6 +994,9 @@ def add_deal():
         if connection: connection.close()
 
 
+
 if __name__ == '__main__':
-    # Running in debug mode auto-reloads the server on code changes
-    app.run(debug=True, port=5000)
+    # In production on Render, gunicorn is used instead of this block.
+    # This block is only for local development.
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
