@@ -23,3 +23,13 @@ cookies.txt
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Environment variables — NEVER commit this file!
+# ─────────────────────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# One-off utility scripts
+refactor.py

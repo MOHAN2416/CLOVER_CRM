@@ -6,8 +6,12 @@ import csv
 import io
 import ollama
 import os
+from dotenv import load_dotenv
 from search_engine import index_all_accounts, semantic_search_pipeline
 from werkzeug.security import generate_password_hash, check_password_hash
+
+# Load variables from .env into os.environ (no-op on Render where vars are injected)
+load_dotenv()
 
 app = Flask(__name__)
 

@@ -2,6 +2,11 @@ import mysql.connector
 from mysql.connector import pooling
 import sys
 import os
+from dotenv import load_dotenv
+
+# Load variables from .env into os.environ (no-op on Render where vars are injected)
+load_dotenv()
+
 
 # ─────────────────────────────────────────────────────────────
 # Pull credentials from environment variables.
