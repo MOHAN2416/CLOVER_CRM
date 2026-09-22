@@ -126,8 +126,8 @@ function renderDashboardCharts(data) {
         leadSources[lead.source] = (leadSources[lead.source] || 0) + 1;
     });
 
-    const labels = Object.keys(leadSources).length ? Object.keys(leadSources) : ['Website', 'LinkedIn', 'Referral', 'Campaign'];
-    const values = Object.keys(leadSources).length ? Object.values(leadSources) : [3, 5, 2, 1];
+    const labels = Object.keys(leadSources);
+    const values = Object.values(leadSources);
 
     const leadMixChartOptions = {
         series: values,
@@ -916,7 +916,7 @@ async function deleteSalesRep(email) {
 async function handleLogout(e) {
     if (e) e.preventDefault();
     try {
-        await fetch(API_BASE_URL + '/logout', { credentials: 'include', method: 'GET' });
+        await fetch(API_BASE_URL + '/api/logout', { credentials: 'include', method: 'GET' });
     } catch (err) {
         console.error("Logout error:", err);
     }

@@ -65,7 +65,7 @@ def ensure_admin_user():
 
 ensure_admin_user()
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     """Serves and processes the secure session authorization portal."""
     if request.method == 'POST':
@@ -108,7 +108,7 @@ def login():
                 
     return jsonify({'status': 'error', 'message': 'Method not allowed'}), 405
 
-@app.route('/signup', methods=['POST'])
+@app.route('/api/signup', methods=['POST'])
 def signup():
     """Serves and processes the sales representative registration portal."""
     if request.method == 'POST':
@@ -159,13 +159,13 @@ def signup():
                 
     return jsonify({'status': 'error', 'message': 'Method not allowed'}), 405
 
-@app.route('/logout')
+@app.route('/api/logout')
 def logout():
     """Destroys the active session and returns a success response."""
     session.clear()
     return jsonify({"status": "success", "message": "Logged out successfully"}), 200
 
-@app.route('/reset-password', methods=['POST'])
+@app.route('/api/reset-password', methods=['POST'])
 def reset_password():
     """Serves and processes the sales representative credential recovery portal."""
     if request.method == 'POST':

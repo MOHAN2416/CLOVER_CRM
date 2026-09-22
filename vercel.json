@@ -10,12 +10,28 @@
       "destination": "/frontend/static/:path*"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/templates/$1"
+      "source": "/login",
+      "destination": "/frontend/templates/login.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/frontend/templates/signup.html"
+    },
+    {
+      "source": "/reset-password",
+      "destination": "/frontend/templates/reset_password.html"
+    },
+    {
+      "source": "/join",
+      "destination": "/frontend/templates/join.html"
     },
     {
       "source": "/",
       "destination": "/frontend/templates/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/templates/$1"
     }
   ]
 }
