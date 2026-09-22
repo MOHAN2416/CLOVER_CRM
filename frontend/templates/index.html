@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>const API_BASE_URL = "http://127.0.0.1:5000";</script>
+    <script>const API_BASE_URL = window.location.protocol + "//" + window.location.hostname + ":5000";</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clover CRM - Premium SaaS Dashboard</title>
@@ -13,7 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Main Style Sheet (Flask / Flat-file compatible) -->
     <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -32,7 +31,7 @@
             <a href="#" class="nav-item" data-bs-toggle="modal" data-bs-target="#bulkUploadModal"><i data-lucide="upload"></i><span>Bulk Import CSV</span></a>
             <hr class="nav-divider">
             <a href="#" class="nav-item" data-bs-toggle="modal" data-bs-target="#myAccountModal" onclick="loadUserProfile()"><i data-lucide="user"></i><span>My Account</span></a>
-            <a href="/logout" class="nav-item"><i data-lucide="log-out"></i><span>Logout</span></a>
+            <a href="#" onclick="handleLogout(event)" class="nav-item"><i data-lucide="log-out"></i><span>Logout</span></a>
         </nav>
         <button class="sidebar-toggle-btn" onclick="toggleSidebar()">
             <i data-lucide="chevron-left" id="sidebar-toggle-icon"></i>
@@ -572,6 +571,5 @@
 
 <!-- Main Script Sheet (Flask / Flat-file compatible) -->
 <script src="/static/js/script.js"></script>
-<script src="script.js"></script>
 </body>
 </html>

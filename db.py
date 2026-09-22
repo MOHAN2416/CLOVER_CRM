@@ -30,7 +30,7 @@ try:
         pool_size=5,
         **db_config
     )
-    print("[✓] Database connection pool initialized successfully.")
+    print("[OK] Database connection pool initialized successfully.")
 except mysql.connector.Error as err:
     print(f"\n❌ DATABASE CONFIGURATION ERROR: {err}")
     print("Please check your DB_HOST, DB_USER, DB_PASSWORD, DB_NAME environment variables.")

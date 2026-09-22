@@ -1,0 +1,6 @@
+name,email,company,phone,source
+Jeff Bezos,jeff@amazon.com,Amazon,6789012345,Inbound
+Doug McMillon,doug@walmart.com,Walmart,7890123456,LinkedIn
+Brian Cornell,brian@target.com,Target Corp,8901234567,Referral
+Craig Menear,craig@homedepot.com,Home Depot,9012345678,Campaign
+John Furner,john@samsclub.com,Sams Club,0123456789,Inbound

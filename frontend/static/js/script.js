@@ -196,7 +196,7 @@ function renderDashboardCharts(data) {
 // Primary metrics loading function
 async function loadDashboardMetrics() {
     try {
-        const response = await fetch(API_BASE_URL + '/api/dashboard/metrics');
+        const response = await fetch(API_BASE_URL + '/api/dashboard/metrics', {credentials: 'include'});
         const result = await response.json();
         
         if (result.status === 'success') {
@@ -679,8 +679,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function populateDropdowns() {
     try {
         const [accountsRes, metricsRes] = await Promise.all([
-            fetch(API_BASE_URL + '/api/accounts'),
-            fetch(API_BASE_URL + '/api/dashboard/metrics')
+            fetch(API_BASE_URL + '/api/accounts', {credentials: 'include'}),
+            fetch(API_BASE_URL + '/api/dashboard/metrics', {credentials: 'include'})
         ]);
         const accountsResult = await accountsRes.json();
         const metricsResult = await metricsRes.json();
@@ -714,8 +714,8 @@ async function populateDropdowns() {
 async function populateTaskDropdowns() {
     try {
         const [accountsRes, metricsRes] = await Promise.all([
-            fetch(API_BASE_URL + '/api/accounts'),
-            fetch(API_BASE_URL + '/api/dashboard/metrics')
+            fetch(API_BASE_URL + '/api/accounts', {credentials: 'include'}),
+            fetch(API_BASE_URL + '/api/dashboard/metrics', {credentials: 'include'})
         ]);
         const accountsResult = await accountsRes.json();
         const metricsResult = await metricsRes.json();
@@ -748,7 +748,7 @@ async function populateTaskDropdowns() {
 // Mark Task Complete (PUT Route Action)
 async function markTaskComplete(taskId) {
     try {
-        const response = await fetch(`/api/tasks/${taskId}/complete`, {
+        const response = await fetch(API_BASE_URL + `/api/tasks/${taskId}/complete`, {
         credentials: 'include', method: 'PUT' });
         const result = await response.json();
         if (result.status === 'success') {
@@ -774,7 +774,7 @@ async function generateAIEmail(accountId) {
     }
 
     try {
-        const response = await fetch(`/api/ai/suggest-email/${accountId}`);
+        const response = await fetch(API_BASE_URL + `/api/ai/suggest-email/${accountId}`, {credentials: 'include'});
         if (!response.ok) {
             const errText = await response.text();
             if (textArea) {
@@ -861,7 +861,7 @@ document.getElementById('globalSearchInput').addEventListener('input', function(
 // Fetch and populate My Account profile details and analytics
 async function loadUserProfile() {
     try {
-        const response = await fetch(API_BASE_URL + '/api/profile');
+        const response = await fetch(API_BASE_URL + '/api/profile', {credentials: 'include'});
         const result = await response.json();
         
         if (result.status === 'success') {
@@ -895,7 +895,7 @@ async function deleteSalesRep(email) {
     }
     
     try {
-        const response = await fetch(`/api/admin/sales-reps/${email}`, {
+        const response = await fetch(API_BASE_URL + `/api/admin/sales-reps/${email}`, {
         credentials: 'include',
             method: 'DELETE'
         });
@@ -910,4 +910,16 @@ async function deleteSalesRep(email) {
     } catch (e) {
         console.error("Error deleting rep:", e);
     }
+}
+
+// Handle Logout
+async function handleLogout(e) {
+    if (e) e.preventDefault();
+    try {
+        await fetch(API_BASE_URL + '/logout', { credentials: 'include', method: 'GET' });
+    } catch (err) {
+        console.error("Logout error:", err);
+    }
+    // Redirect to login page served by frontend server
+    window.location.href = '/login';
 }

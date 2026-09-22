@@ -4,7 +4,7 @@ import mysql.connector
 from db import get_db_connection
 import csv
 import io
-import ollama
+from groq import Groq
 import os
 from dotenv import load_dotenv
 from search_engine import index_all_accounts, semantic_search_pipeline
@@ -25,9 +25,14 @@ app.secret_key = os.environ.get('SECRET_KEY', 'clover_system_encryption_token_se
 # FRONTEND_URL is your Vercel deployment URL e.g. https://clover-crm.vercel.app
 # Defaults to localhost for local testing.
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:8000')
-CORS(app, supports_credentials=True, origins=[FRONTEND_URL])
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
-app.config['SESSION_COOKIE_SECURE'] = True
+CORS(app, supports_credentials=True, origins=[FRONTEND_URL, 'http://127.0.0.1:8000', 'http://localhost:8000', 'http://11.12.22.120:8000'])
+# For local HTTP development, cookies cannot be Secure=True with SameSite=None
+if 'localhost' in FRONTEND_URL or '127.0.0.1' in FRONTEND_URL:
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_SECURE'] = False
+else:
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+    app.config['SESSION_COOKIE_SECURE'] = True
 
 
 def ensure_admin_user():
@@ -156,9 +161,9 @@ def signup():
 
 @app.route('/logout')
 def logout():
-    """Destroys the active session and redirects to the login portal."""
+    """Destroys the active session and returns a success response."""
     session.clear()
-    return redirect(url_for('login'))
+    return jsonify({"status": "success", "message": "Logged out successfully"}), 200
 
 @app.route('/reset-password', methods=['POST'])
 def reset_password():
@@ -332,26 +337,29 @@ def ai_suggest_email(account_id):
         
         user_prompt = f"Write a contextual email follow-up for {account_data['name']} at {account_data['company'] or 'Independent'}. Deal Stage: {account_data['stage']}. Value: INR {float(account_data['deal_value'])}."
 
-        # Determine the model name dynamically based on pulled models
-        selected_model = 'qwen2.5:3b-instruct'
-        try:
-            models_response = ollama.list()
-            available_models = [m.model for m in models_response.models] if hasattr(models_response, 'models') else [m.get('model') for m in models_response.get('models', [])]
-            if available_models and selected_model not in available_models:
-                # Fallback to the first available model if qwen2.5:3b-instruct is missing
-                selected_model = available_models[0]
-        except Exception:
-            pass
-
-        # Define an internal generator function to stream text segments as they calculate
+        # Define an internal generator function to stream text segments using Groq
         def generate_tokens():
-            response_stream = ollama.generate(
-                model=selected_model,
-                prompt=f"{system_instructions}\n\n{user_prompt}",
-                stream=True # Activates the token streaming protocol
-            )
-            for chunk in response_stream:
-                yield chunk['response']
+            try:
+                # Initialize Groq client
+                client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+                
+                # We use a fast, reliable model on Groq
+                selected_model = 'llama-3.1-8b-instant'
+                
+                response_stream = client.chat.completions.create(
+                    model=selected_model,
+                    messages=[
+                        {"role": "system", "content": system_instructions},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    stream=True
+                )
+                
+                for chunk in response_stream:
+                    if chunk.choices[0].delta.content is not None:
+                        yield chunk.choices[0].delta.content
+            except Exception as e:
+                yield f"Error generating text: {str(e)}"
 
         # Return a live response streaming wrapper
         return Response(generate_tokens(), mimetype='text/plain')

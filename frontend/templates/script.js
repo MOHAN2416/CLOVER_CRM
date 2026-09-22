@@ -1,5 +1,9 @@
+// Global API Base URL (keep empty if using vercel.json proxy)
+const API_BASE = '';
+
 // Global chart instances
 let revenueChartInstance = null;
+
 let leadMixChartInstance = null;
 
 // Sidebar Collapsed functionality
@@ -196,7 +200,7 @@ function renderDashboardCharts(data) {
 // Primary metrics loading function
 async function loadDashboardMetrics() {
     try {
-        const response = await fetch('/api/dashboard/metrics');
+        const response = await fetch(API_BASE + '/api/dashboard/metrics');
         const result = await response.json();
         
         if (result.status === 'success') {
@@ -508,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('/api/accounts', {
+                const response = await fetch(API_BASE + '/api/accounts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -543,7 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('/api/deals', {
+                const response = await fetch(API_BASE + '/api/deals', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -579,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const res = await fetch('/api/tasks', {
+                const res = await fetch(API_BASE + '/api/tasks', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -613,7 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 formData.append('file', fileInput.files[0]);
 
                 try {
-                    const response = await fetch('/api/accounts/bulk-upload', {
+                    const response = await fetch(API_BASE + '/api/accounts/bulk-upload', {
                         method: 'POST',
                         body: formData
                     });
@@ -646,7 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             
             try {
-                const response = await fetch('/api/admin/sales-reps', {
+                const response = await fetch(API_BASE + '/api/admin/sales-reps', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -674,8 +678,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function populateDropdowns() {
     try {
         const [accountsRes, metricsRes] = await Promise.all([
-            fetch('/api/accounts'),
-            fetch('/api/dashboard/metrics')
+            fetch(API_BASE + '/api/accounts'),
+            fetch(API_BASE + '/api/dashboard/metrics')
         ]);
         const accountsResult = await accountsRes.json();
         const metricsResult = await metricsRes.json();
@@ -709,8 +713,8 @@ async function populateDropdowns() {
 async function populateTaskDropdowns() {
     try {
         const [accountsRes, metricsRes] = await Promise.all([
-            fetch('/api/accounts'),
-            fetch('/api/dashboard/metrics')
+            fetch(API_BASE + '/api/accounts'),
+            fetch(API_BASE + '/api/dashboard/metrics')
         ]);
         const accountsResult = await accountsRes.json();
         const metricsResult = await metricsRes.json();
@@ -743,7 +747,7 @@ async function populateTaskDropdowns() {
 // Mark Task Complete (PUT Route Action)
 async function markTaskComplete(taskId) {
     try {
-        const response = await fetch(`/api/tasks/${taskId}/complete`, { method: 'PUT' });
+        const response = await fetch(`${API_BASE}/api/tasks/${taskId}/complete`, { method: 'PUT' });
         const result = await response.json();
         if (result.status === 'success') {
             loadDashboardMetrics();
@@ -768,7 +772,7 @@ async function generateAIEmail(accountId) {
     }
 
     try {
-        const response = await fetch(`/api/ai/suggest-email/${accountId}`);
+        const response = await fetch(`${API_BASE}/api/ai/suggest-email/${accountId}`);
         if (!response.ok) {
             const errText = await response.text();
             if (textArea) {
@@ -819,7 +823,7 @@ document.getElementById('globalSearchInput').addEventListener('input', function(
     // Set a timeout to debounce the heavy vector search query (300ms delay)
     searchTimeout = setTimeout(async () => {
         try {
-            const response = await fetch('/api/search', {
+            const response = await fetch(API_BASE + '/api/search', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ query: query })
@@ -854,7 +858,7 @@ document.getElementById('globalSearchInput').addEventListener('input', function(
 // Fetch and populate My Account profile details and analytics
 async function loadUserProfile() {
     try {
-        const response = await fetch('/api/profile');
+        const response = await fetch(API_BASE + '/api/profile');
         const result = await response.json();
         
         if (result.status === 'success') {
@@ -888,7 +892,7 @@ async function deleteSalesRep(email) {
     }
     
     try {
-        const response = await fetch(`/api/admin/sales-reps/${email}`, {
+        const response = await fetch(`${API_BASE}/api/admin/sales-reps/${email}`, {
             method: 'DELETE'
         });
         const result = await response.json();

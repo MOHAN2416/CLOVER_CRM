@@ -1,0 +1,6 @@
+name,email,company,phone,source
+Elon Musk,elon@tesla.com,Tesla Inc,1234567890,Twitter
+Sam Altman,sam@openai.com,OpenAI,2345678901,Conference
+Sundar Pichai,sundar@google.com,Alphabet,3456789012,Inbound
+Satya Nadella,satya@microsoft.com,Microsoft,4567890123,LinkedIn
+Mark Zuckerberg,mark@meta.com,Meta Platforms,5678901234,Referral
