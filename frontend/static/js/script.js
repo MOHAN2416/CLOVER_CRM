@@ -491,6 +491,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateDashboardTime, 1000);
     loadDashboardMetrics();
 
+    // Prevent Chrome accessibility "Blocked aria-hidden on an element because its descendant retained focus" warning
+    document.addEventListener('hide.bs.modal', function(e) {
+        if (e.target && e.target.contains(document.activeElement)) {
+            document.activeElement.blur();
+        }
+    });
+
     // Lead Entry Submit Handler
     const leadFormEl = document.getElementById('leadForm');
     if (leadFormEl) {
