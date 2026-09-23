@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://your-backend.onrender.com/api/:path*"
+      "destination": "https://clover-crm.onrender.com/api/:path*"
     },
     {
       "source": "/static/:path*",
