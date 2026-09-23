@@ -7,31 +7,31 @@
     },
     {
       "source": "/static/:path*",
-      "destination": "/frontend/static/:path*"
+      "destination": "/static/:path*"
     },
     {
       "source": "/login",
-      "destination": "/frontend/templates/login.html"
+      "destination": "/templates/login.html"
     },
     {
       "source": "/signup",
-      "destination": "/frontend/templates/signup.html"
+      "destination": "/templates/signup.html"
     },
     {
       "source": "/reset-password",
-      "destination": "/frontend/templates/reset_password.html"
+      "destination": "/templates/reset_password.html"
     },
     {
       "source": "/join",
-      "destination": "/frontend/templates/join.html"
+      "destination": "/templates/join.html"
     },
     {
       "source": "/",
-      "destination": "/frontend/templates/index.html"
+      "destination": "/templates/index.html"
     },
     {
       "source": "/(.*)",
-      "destination": "/frontend/templates/$1"
+      "destination": "/templates/$1"
     }
   ]
 }
