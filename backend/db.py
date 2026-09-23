@@ -14,12 +14,28 @@ load_dotenv()
 # Environment Variable.
 # For local development: they fall back to your local MySQL setup.
 # ─────────────────────────────────────────────────────────────
+db_host = os.environ.get("DB_HOST", "localhost")
+db_port = int(os.environ.get("DB_PORT", 3306))
+
 db_config = {
-    "host":     os.environ.get("DB_HOST",     "localhost"),
+    "host":     db_host,
+    "port":     db_port,
     "user":     os.environ.get("DB_USER",     "root"),
     "password": os.environ.get("DB_PASSWORD", "CloverPass123!"),
     "database": os.environ.get("DB_NAME",     "crm_db")
 }
+
+# TiDB Cloud and remote cloud databases enforce SSL/TLS encryption
+if db_host not in ("localhost", "127.0.0.1"):
+    try:
+        import certifi
+        db_config["ssl_ca"] = certifi.where()
+        db_config["ssl_verify_cert"] = True
+        db_config["ssl_verify_identity"] = True
+    except Exception:
+        # Fallback if certifi is unavailable
+        db_config["ssl_disabled"] = False
+
 
 # Pre-initialize pool to None
 connection_pool = None
