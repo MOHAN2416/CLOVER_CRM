@@ -741,10 +741,12 @@ async function populateTaskDropdowns() {
             
             const repSelect = document.getElementById('taskRepSelect');
             if (repSelect) {
-                repSelect.innerHTML = '<option value="">-- Select Representative --</option>';
-                metrics.leaderboard.forEach(rep => {
-                    repSelect.innerHTML += `<option value="${rep.rep_id}">${rep.rep_name}</option>`;
-                });
+                repSelect.innerHTML = '<option value="">-- Assign to Me / Default --</option>';
+                if (metrics.leaderboard && metrics.leaderboard.length > 0) {
+                    metrics.leaderboard.forEach(rep => {
+                        repSelect.innerHTML += `<option value="${rep.rep_id}">${rep.rep_name}</option>`;
+                    });
+                }
             }
         }
     } catch (e) {

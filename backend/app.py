@@ -467,10 +467,13 @@ def bulk_upload_accounts():
 @app.route('/api/tasks', methods=['POST'])
 def add_task():
     """Schedules a new follow-up interaction task for a sales rep."""
-    data = request.get_json()
-    
-    if not data or not data.get('account_id') or not data.get('rep_id') or not data.get('due_date'):
-        return jsonify({"status": "error", "message": "Missing required fields (Account, Rep, or Due Date)"}), 400
+    data = request.get_json() or {}
+    account_id = data.get('account_id')
+    rep_id = data.get('rep_id') or session.get('rep_id')
+    due_date = data.get('due_date')
+
+    if not account_id or not due_date:
+        return jsonify({"status": "error", "message": "Missing required fields: Target Account and Due Date are mandatory."}), 400
 
     connection = None
     cursor = None
@@ -478,15 +481,22 @@ def add_task():
         connection = get_db_connection()
         cursor = connection.cursor()
 
+        # If rep_id wasn't specified, inherit from the account if available
+        if not rep_id:
+            cursor.execute("SELECT rep_id FROM accounts WHERE account_id = %s", (account_id,))
+            row = cursor.fetchone()
+            if row and row[0]:
+                rep_id = row[0]
+
         query = """
         INSERT INTO tasks (account_id, rep_id, task_type, due_date, remarks, is_completed)
         VALUES (%s, %s, %s, %s, %s, FALSE)
         """
         values = (
-            data.get('account_id'),
-            data.get('rep_id'),
+            account_id,
+            rep_id,
             data.get('task_type', 'Call'),
-            data.get('due_date'),
+            due_date,
             data.get('remarks', '')
         )
         cursor.execute(query, values)
@@ -779,19 +789,22 @@ def get_dashboard_metrics():
         # Query 3: Active Pending Follow-Ups (Ignores completed/stale tasks)
         if rep_id:
             pending_tasks_query = """
-            SELECT t.task_id, a.name AS account_name, t.task_type, DATE_FORMAT(t.due_date, '%Y-%m-%d %H:%i') AS due_date, t.remarks
+            SELECT t.task_id, COALESCE(a.name, 'General Account') AS account_name, t.task_type, 
+                   COALESCE(DATE_FORMAT(t.due_date, '%Y-%m-%d %H:%i'), CAST(t.due_date AS CHAR)) AS due_date, t.remarks
             FROM tasks t
-            JOIN accounts a ON t.account_id = a.account_id
-            WHERE t.is_completed = FALSE AND t.rep_id = %s
+            LEFT JOIN accounts a ON t.account_id = a.account_id
+            WHERE (t.is_completed = FALSE OR t.is_completed = 0) 
+              AND (t.rep_id = %s OR a.rep_id = %s OR t.rep_id IS NULL)
             ORDER BY t.due_date ASC;
             """
-            cursor.execute(pending_tasks_query, (rep_id,))
+            cursor.execute(pending_tasks_query, (rep_id, rep_id))
         else:
             pending_tasks_query = """
-            SELECT t.task_id, a.name AS account_name, t.task_type, DATE_FORMAT(t.due_date, '%Y-%m-%d %H:%i') AS due_date, t.remarks
+            SELECT t.task_id, COALESCE(a.name, 'General Account') AS account_name, t.task_type, 
+                   COALESCE(DATE_FORMAT(t.due_date, '%Y-%m-%d %H:%i'), CAST(t.due_date AS CHAR)) AS due_date, t.remarks
             FROM tasks t
-            JOIN accounts a ON t.account_id = a.account_id
-            WHERE t.is_completed = FALSE
+            LEFT JOIN accounts a ON t.account_id = a.account_id
+            WHERE (t.is_completed = FALSE OR t.is_completed = 0)
             ORDER BY t.due_date ASC;
             """
             cursor.execute(pending_tasks_query)
