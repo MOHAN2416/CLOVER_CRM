@@ -1,0 +1,6 @@
+# Ignore backend, python scripts, and non-frontend files on Vercel
+backend/
+scripts/
+*.py
+*.sql
+*.csv

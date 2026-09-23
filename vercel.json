@@ -8,31 +8,31 @@
     },
     {
       "source": "/static/:path*",
-      "destination": "/static/:path*"
+      "destination": "/frontend/static/:path*"
     },
     {
       "source": "/login",
-      "destination": "/templates/login.html"
+      "destination": "/frontend/templates/login.html"
     },
     {
       "source": "/signup",
-      "destination": "/templates/signup.html"
+      "destination": "/frontend/templates/signup.html"
     },
     {
       "source": "/reset-password",
-      "destination": "/templates/reset_password.html"
+      "destination": "/frontend/templates/reset_password.html"
     },
     {
       "source": "/join",
-      "destination": "/templates/join.html"
+      "destination": "/frontend/templates/join.html"
     },
     {
       "source": "/",
-      "destination": "/templates/index.html"
+      "destination": "/frontend/templates/index.html"
     },
     {
       "source": "/(.*)",
-      "destination": "/templates/$1"
+      "destination": "/frontend/templates/$1"
     }
   ]
 }
