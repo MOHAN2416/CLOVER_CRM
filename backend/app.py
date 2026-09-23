@@ -7,7 +7,6 @@ import io
 from groq import Groq
 import os
 from dotenv import load_dotenv
-from search_engine import index_all_accounts, semantic_search_pipeline
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Load variables from .env into os.environ (no-op on Render where vars are injected)
@@ -337,13 +336,26 @@ def ai_suggest_email(account_id):
         
         user_prompt = f"Write a contextual email follow-up for {account_data['name']} at {account_data['company'] or 'Independent'}. Deal Stage: {account_data['stage']}. Value: INR {float(account_data['deal_value'])}."
 
-        # Define an internal generator function to stream text segments using Groq
+        # Define an internal generator function to stream text segments using Groq (or fallback)
         def generate_tokens():
+            groq_key = os.environ.get("GROQ_API_KEY")
+            if not groq_key or groq_key == "your_groq_api_key_here":
+                # Fallback template if Groq is not configured
+                fallback = (
+                    f"Subject: Follow-up regarding {account_data['name']} / {account_data['company'] or 'Partnership'}\n\n"
+                    f"Dear {account_data['name']},\n\n"
+                    f"I hope this note finds you well. I am writing to follow up on our recent conversation regarding your account with Clover CRM.\n\n"
+                    f"We noticed that your deal is currently at the '{account_data['stage']}' stage. Our team is ready to assist you in moving forward and ensuring you have everything you need to reach your objectives.\n\n"
+                    f"Would you be open to a brief 10-minute check-in later this week?\n\n"
+                    f"Best regards,\n"
+                    f"Clover CRM Sales Team"
+                )
+                yield fallback
+                return
+
             try:
-                # Initialize Groq client
-                client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-                
-                # We use a fast, reliable model on Groq
+                # Initialize lightweight Groq Cloud Client
+                client = Groq(api_key=groq_key)
                 selected_model = 'llama-3.1-8b-instant'
                 
                 response_stream = client.chat.completions.create(
@@ -359,7 +371,7 @@ def ai_suggest_email(account_id):
                     if chunk.choices[0].delta.content is not None:
                         yield chunk.choices[0].delta.content
             except Exception as e:
-                yield f"Error generating text: {str(e)}"
+                yield f"Error generating email: {str(e)}"
 
         # Return a live response streaming wrapper
         return Response(generate_tokens(), mimetype='text/plain')
